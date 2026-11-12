@@ -1,9 +1,11 @@
-
 import { View, Text, StyleSheet } from 'react-native';
-import { Screen } from '../components';
+import { Screen, AppButton } from '../components';
+import { useAuth } from '../context/AuthContext';
 import { colors, spacing, typography } from '../theme';
 
 function ProfileScreen() {
+  const { user, logout } = useAuth();
+
   return (
     <Screen>
       <Text style={styles.title}>Meu perfil</Text>
@@ -11,11 +13,9 @@ function ProfileScreen() {
       <View style={styles.profile}>
         <Text style={styles.avatar}>🎬</Text>
 
-        <Text style={styles.name}>Cinéfilo</Text>
+        <Text style={styles.name}>{user?.displayName || 'Cinéfilo'}</Text>
 
-        <Text style={styles.description}>
-          Apaixonado pelo mundo do cinema.
-        </Text>
+        <Text style={styles.description}>{user?.email}</Text>
       </View>
 
       <View style={styles.info}>
@@ -26,6 +26,10 @@ function ProfileScreen() {
         <Text style={styles.description}>
           Aqui você poderá acompanhar sua jornada cinematográfica.
         </Text>
+      </View>
+
+      <View style={styles.logout}>
+        <AppButton title="Sair" variant="outline" onPress={logout} />
       </View>
     </Screen>
   );
