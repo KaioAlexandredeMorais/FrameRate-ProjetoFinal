@@ -1,21 +1,17 @@
-
 import { Text, StyleSheet } from 'react-native';
 import { Screen, EmptyState } from '../components';
 import { colors, spacing, typography } from '../theme';
 
-function DiaryScreen() {
+function ListScreen() {
   return (
     <Screen>
-      <Text style={styles.title}>Meu diário</Text>
+      <Text style={styles.title}>Minha Lista</Text>
 
       <Text style={styles.subtitle}>
         Sua história como espectador.
       </Text>
 
-      <EmptyState
-        title="Seu diário está vazio"
-        message="Os filmes que você assistir e avaliar aparecerão aqui."
-      />
+      <EmptyState title="Sua lista está vazia" message="Os filmes que você assistir e avaliar aparecerão aqui." />
     </Screen>
   );
 }
@@ -34,4 +30,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiaryScreen;
+export default ListScreen;

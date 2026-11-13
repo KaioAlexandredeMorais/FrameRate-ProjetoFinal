@@ -1,12 +1,9 @@
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
-import DiaryScreen from '../screens/DiaryScreen';
+import ListScreen from '../screens/ListScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-
 import { colors } from '../theme';
 
 const Tab = createBottomTabNavigator();
@@ -40,8 +37,8 @@ function TabNavigator() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
-          } else if (route.name === 'Diary') {
-            iconName = focused ? 'book' : 'book-outline';
+          } else if (route.name === 'List') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -56,29 +53,10 @@ function TabNavigator() {
         },
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ tabBarLabel: 'Início' }}
-      />
-
-      <Tab.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{ tabBarLabel: 'Buscar' }}
-      />
-
-      <Tab.Screen
-        name="Diary"
-        component={DiaryScreen}
-        options={{ tabBarLabel: 'Diário' }}
-      />
-
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Perfil' }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Início' }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ tabBarLabel: 'Buscar' }} />
+      <Tab.Screen name="List" component={ListScreen} options={{ tabBarLabel: 'Lista' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: 'Perfil' }} />
     </Tab.Navigator>
   );
 }

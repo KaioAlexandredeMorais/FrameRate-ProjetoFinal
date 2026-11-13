@@ -1,7 +1,4 @@
-import {
-  collection, addDoc, doc, updateDoc, deleteDoc,
-  query, where, orderBy, getDocs, serverTimestamp,
-} from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, query, where, orderBy, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 const reviewsRef = collection(db, 'reviews');

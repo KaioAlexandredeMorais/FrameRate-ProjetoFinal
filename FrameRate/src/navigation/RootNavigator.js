@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { Loading } from '../components';
-
 import TabNavigator from './TabNavigator';
 import MovieDetailsScreen from '../screens/MovieDetailsScreen';
 import LoginScreen from '../screens/LoginScreen';
