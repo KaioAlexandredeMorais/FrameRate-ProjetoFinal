@@ -1,4 +1,3 @@
-
 export { default as Screen } from './Screen';
 export { default as AppButton } from './AppButton';
 export { default as AppInput } from './AppInput';

@@ -1,12 +1,9 @@
-
 import { Pressable, Text, StyleSheet } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 
 function AppButton({ title, onPress, variant = 'primary', disabled = false }) {
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
+    <Pressable onPress={onPress} disabled={disabled}
       style={[
         styles.button,
         variant === 'secondary' && styles.secondary,
