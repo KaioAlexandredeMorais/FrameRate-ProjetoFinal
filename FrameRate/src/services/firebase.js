@@ -15,7 +15,6 @@ const firebaseConfig = {
 const isNew = getApps().length === 0;
 const app = isNew ? initializeApp(firebaseConfig) : getApp();
 
-// initializeAuth só pode rodar uma vez (cuidado com o Fast Refresh)
 export const auth = isNew
   ? initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) })
   : getAuth(app);

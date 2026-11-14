@@ -1,4 +1,3 @@
-
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 

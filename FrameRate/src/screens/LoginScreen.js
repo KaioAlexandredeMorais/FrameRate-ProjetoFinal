@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Text, ScrollView, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, Image, ScrollView, KeyboardAvoidingView, Platform, Pressable, StyleSheet } from 'react-native';
 import { Screen, AppInput, AppButton } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { authErrorMessage } from '../services/authService';
 import { validateLogin } from '../utils/validators';
 import { colors, spacing, typography } from '../theme';
+
+const RATE_COLOR = '#FFC83D';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
@@ -24,7 +25,6 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     try {
       await login(email.trim(), password);
-      // o AuthContext detecta o usuário e o RootNavigator troca de tela sozinho
     } catch (e) {
       setFormError(authErrorMessage(e));
     } finally {
@@ -34,23 +34,20 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <Screen>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Ionicons
-            name="film"
-            size={56}
-            color={colors.primary}
-            style={{ alignSelf: 'center' }}
-          />
-          <Text style={[typography.title, { textAlign: 'center', marginBottom: spacing.lg }]}>
-            FrameRate
-          </Text>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} keyboardShouldPersistTaps="handled">
+          <View style={styles.brand}>
+            <Image
+              source={require('../../assets/framerate-logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.logoText}>
+              <Text style={styles.frame}>Frame</Text>
+              <Text style={styles.rate}>Rate</Text>
+              <Text style={styles.dot}>.</Text>
+            </Text>
+          </View>
 
           <AppInput
             label="E-mail"
@@ -77,8 +74,8 @@ export default function LoginScreen({ navigation }) {
           <AppButton title="Entrar" onPress={handleLogin} loading={loading} />
 
           <Pressable onPress={() => navigation.navigate('Register')} style={{ marginTop: spacing.lg }}>
-            <Text style={[typography.caption, { textAlign: 'center' }]}>
-              Não tem conta? <Text style={{ color: colors.primary }}>Cadastre-se</Text>
+            <Text style={styles.registerText}>
+              Não tem conta? <Text style={styles.registerLink}>Cadastre-se</Text>
             </Text>
           </Pressable>
         </ScrollView>
@@ -86,3 +83,38 @@ export default function LoginScreen({ navigation }) {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  brand: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  logoImage: {
+    width: 93,
+    height: 76,
+    marginBottom: spacing.sm,
+  },
+  logoText: {
+    color: colors.text,
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  frame: {
+    color: colors.primary,
+  },
+  rate: {
+    color: RATE_COLOR,
+  },
+  dot: {
+    color: colors.primary,
+  },
+  registerText: {
+    color: colors.textSecondary,
+    fontSize: typography.body,
+    textAlign: 'center',
+  },
+  registerLink: {
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+});
