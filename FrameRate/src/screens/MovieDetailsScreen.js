@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, ScrollView, ActivityIndicator, Alert } from 'react-native'; // mudou-pedro: Alert
 import { Screen, AppButton } from '../components';
+import { useMovies } from '../context/MoviesContext'; // mudou-pedro
 import { colors, spacing, typography } from '../theme';
 import { getMovieDetails, getImageUrl } from '../services/tmdbService';
 
@@ -23,6 +24,9 @@ function MovieDetailsScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageFailed, setImageFailed] = useState(false);
+  // mudou-pedro: estado global (avaliação e lista "Quero ver")
+  const { getReviewByMovie, isInWatchlist, addToWatchlist, removeFromWatchlist } = useMovies();
+  const [watchlistBusy, setWatchlistBusy] = useState(false);
 
   const load = useCallback(async () => {
     if (!movieId) {
@@ -78,6 +82,31 @@ function MovieDetailsScreen({ navigation, route }) {
   const releaseDate = formatDate(movie.release_date);
   const director = movie.credits?.crew?.find((p) => p.job === 'Director');
   const cast = (movie.credits?.cast || []).slice(0, 15);
+
+  // mudou-pedro: início (resumo do filme + ação de "Quero ver")
+  // Resumo salvo junto com a avaliação / item da lista "Quero ver".
+  const summary = {
+    movieId: movie.id,
+    title: movie.title,
+    posterPath: movie.poster_path,
+    genres: (movie.genres || []).map((g) => g.name),
+    year: year ? Number(year) : null,
+  };
+  const reviewed = Boolean(getReviewByMovie(movie.id));
+  const inWatchlist = isInWatchlist(movie.id);
+
+  async function toggleWatchlist() {
+    setWatchlistBusy(true);
+    try {
+      if (inWatchlist) await removeFromWatchlist(movie.id);
+      else await addToWatchlist(summary);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível atualizar sua lista. Tente novamente.');
+    } finally {
+      setWatchlistBusy(false);
+    }
+  }
+  // mudou-pedro: fim
 
   return (
     <Screen>
@@ -153,6 +182,24 @@ function MovieDetailsScreen({ navigation, route }) {
             }}
           />
         </>
+      )}
+
+      {/* mudou-pedro: botões Avaliar / Quero ver */}
+      <View style={styles.buttonSpacing}>
+        <AppButton
+          title={reviewed ? 'Editar minha avaliação' : 'Avaliar'}
+          onPress={() => navigation.navigate('ReviewForm', { movie: summary })}
+        />
+      </View>
+      {!reviewed && (
+        <View style={styles.buttonSpacing}>
+          <AppButton
+            title={inWatchlist ? 'Remover de "Quero ver"' : 'Quero ver'}
+            variant="secondary"
+            onPress={toggleWatchlist}
+            loading={watchlistBusy}
+          />
+        </View>
       )}
 
       <View style={styles.buttonSpacing}>{backButton}</View>

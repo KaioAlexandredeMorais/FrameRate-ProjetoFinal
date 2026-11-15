@@ -26,7 +26,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O FrameRate precisa acessar suas fotos para você escolher a foto de perfil."
+        }
+      ],
+      "expo-notifications"
     ]
   }
 }
