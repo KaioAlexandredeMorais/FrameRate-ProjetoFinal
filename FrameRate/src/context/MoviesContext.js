@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext';
 import * as reviewService from '../services/reviewService';
 import * as watchlistService from '../services/watchlistService';
 import * as userService from '../services/userService';
+// serviço responsável pelas listas personalizadas do usuário. codigo luiz
+import * as customListService from '../services/customListService';
 import { computeStats, uniqueGenres } from '../utils/stats';
 import { toDate } from '../utils/format';
 
@@ -14,6 +16,8 @@ const defaultFilters = { genre: null, minRating: 0 };
 const initialState = {
   reviews: [],
   watchlist: [],
+  //código luiz espaços das listas no estado inicial
+  customLists: [],
   photo: null,
   filters: defaultFilters,
   loading: true,
@@ -48,6 +52,62 @@ function reducer(state, action) {
       };
     case 'WATCHLIST_REMOVED':
       return { ...state, watchlist: state.watchlist.filter((i) => i.movieId !== action.movieId) };
+        // Listas personalizadas
+    case 'CUSTOM_LISTS_LOADED':
+      return { ...state, customLists: action.customLists };
+
+    case 'CUSTOM_LIST_ADDED':
+      return {
+        ...state,
+        customLists: [action.customList, ...state.customLists],
+      };
+
+    case 'CUSTOM_LIST_UPDATED':
+      return {
+        ...state,
+        customLists: state.customLists.map((list) =>
+          list.id === action.id ? { ...list, ...action.changes } : list
+        ),
+      };
+
+    case 'CUSTOM_LIST_REMOVED':
+      return {
+        ...state,
+        customLists: state.customLists.filter((list) => list.id !== action.id),
+      };
+
+    case 'CUSTOM_LIST_MOVIE_ADDED':
+      return {
+        ...state,
+        customLists: state.customLists.map((list) =>
+          list.id === action.listId
+            ? {
+                ...list,
+                movies: [
+                  action.movie,
+                  ...(list.movies || []).filter(
+                    (movie) => movie.movieId !== action.movie.movieId
+                  ),
+                ],
+              }
+            : list
+        ),
+      };
+
+    case 'CUSTOM_LIST_MOVIE_REMOVED':
+      return {
+        ...state,
+        customLists: state.customLists.map((list) =>
+          list.id === action.listId
+            ? {
+                ...list,
+                movies: (list.movies || []).filter(
+                  (movie) => movie.movieId !== action.movieId
+                ),
+              }
+            : list
+        ),
+      };
 
     case 'PHOTO_SET':
       return { ...state, photo: action.photo };
@@ -80,10 +140,11 @@ export function MoviesProvider({ children }) {
       reviewService.getUserReviews(uid),
       watchlistService.getUserWatchlist(uid),
       userService.getUserProfile(uid),
+      customListService.getUserCustomLists(uid),
     ])
-      .then(([reviews, watchlist, profile]) => {
+      .then(([reviews, watchlist, profile, customLists]) => {
         if (!cancelled) {
-          dispatch({ type: 'LOAD_SUCCESS', payload: { reviews, watchlist, photo: profile.photoBase64 ?? null } });
+          dispatch({ type: 'LOAD_SUCCESS', payload: { reviews, watchlist, customLists, photo: profile.photoBase64 ?? null } });
         }
       })
       .catch(() => {
@@ -139,6 +200,51 @@ export function MoviesProvider({ children }) {
     },
     [uid]
   );
+  
+  // Cria uma lista personalizada. //Código luiz abaixo
+  const createCustomList = useCallback(
+    async (list) => {
+      const customList = await customListService.createCustomList(uid, list);
+      dispatch({ type: 'CUSTOM_LIST_ADDED', customList });
+    },
+    [uid]
+  );
+
+  // Atualiza nome, tag ou descrição da lista.
+  const updateCustomList = useCallback(
+    async (listId, changes) => {
+      await customListService.updateCustomList(listId, changes);
+      dispatch({ type: 'CUSTOM_LIST_UPDATED', id: listId, changes });
+    },
+    []
+  );
+
+  // Exclui uma lista personalizada.
+  const deleteCustomList = useCallback(
+    async (listId) => {
+      await customListService.deleteCustomList(listId);
+      dispatch({ type: 'CUSTOM_LIST_REMOVED', id: listId });
+    },
+    []
+  );
+
+  // Adiciona um filme à lista.
+  const addMovieToCustomList = useCallback(
+    async (listId, movie) => {
+      await customListService.addMovieToCustomList(listId, movie);
+      dispatch({ type: 'CUSTOM_LIST_MOVIE_ADDED', listId, movie });
+    },
+    []
+  );
+
+  // Remove um filme da lista.
+  const removeMovieFromCustomList = useCallback(
+    async (listId, movieId) => {
+      await customListService.removeMovieFromCustomList(listId, movieId);
+      dispatch({ type: 'CUSTOM_LIST_MOVIE_REMOVED', listId, movieId });
+    },
+    []
+  );
 
   const setProfilePhoto = useCallback(
     async (base64) => {
@@ -180,6 +286,11 @@ export function MoviesProvider({ children }) {
     removeReview,
     addToWatchlist,
     removeFromWatchlist,
+    createCustomList,
+    updateCustomList,
+    deleteCustomList,
+    addMovieToCustomList,
+    removeMovieFromCustomList,
     setProfilePhoto,
     setFilters,
     resetFilters,

@@ -2,6 +2,9 @@
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+//Luiz adicionou
+import { updateProfile } from 'firebase/auth';
+import { auth } from '../services/firebase';
 import { Screen, AppButton, AppInput, Avatar } from '../components';
 import { useAuth } from '../context/AuthContext';
 import { useMovies } from '../context/MoviesContext';
@@ -30,6 +33,10 @@ function ProfileScreen() {
   const [password, setPassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [savedName, setSavedName] = useState(user?.displayName || '');
+  const [nameBusy, setNameBusy] = useState(false);
 
   async function pickPhoto() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -98,6 +105,24 @@ function ProfileScreen() {
       setDeleting(false);
     }
   }
+//Luiz adicionou
+  async function handleSaveName() {
+  const newName = nameInput.trim();
+  if (!newName) {
+    Alert.alert('Atenção', 'Digite um nome de perfil.');
+    return;
+  }
+  setNameBusy(true);
+  try {
+    await updateProfile(auth.currentUser, { displayName: newName });
+    setSavedName(newName);
+    setEditingName(false);
+  } catch {
+    Alert.alert('Erro', 'Não foi possível alterar o nome. Tente novamente.');
+  } finally {
+    setNameBusy(false);
+  }
+}
 
   const average = stats.total > 0 ? stats.average.toFixed(1) : '—';
 
@@ -108,8 +133,39 @@ function ProfileScreen() {
 
         <View style={styles.profile}>
           <Avatar photo={photo} onPress={photoBusy ? undefined : handleAvatarPress} />
-          <Text style={styles.name}>{user?.displayName || 'Cinéfilo'}</Text>
+          <Text style={styles.name}>{savedName || 'Cinéfilo'}</Text>
           <Text style={styles.email}>{photoBusy ? 'Salvando foto...' : user?.email}</Text>
+          
+        <View style={{ alignSelf: 'stretch', marginTop: spacing.md }}>
+        {editingName ? (
+          <>
+            <AppInput
+              label="Nome de perfil"
+              value={nameInput}
+              onChangeText={setNameInput}
+              editable={!nameBusy}
+            />
+            <AppButton title="Salvar nome" onPress={handleSaveName} loading={nameBusy} />
+            <View style={styles.cancel}>
+              <AppButton
+                title="Cancelar"
+                variant="outline"
+                disabled={nameBusy}
+                onPress={() => setEditingName(false)}
+              />
+            </View>
+          </>
+        ) : (
+          <AppButton
+            title="Editar nome"
+            variant="outline"
+            onPress={() => {
+              setNameInput(savedName);
+              setEditingName(true);
+            }}
+          />
+        )}
+      </View>
         </View>
 
         <Text style={styles.sectionTitle}>Suas estatísticas</Text>
