@@ -251,18 +251,17 @@ const totalWithoutFilters = isReviews
             <Text style={[styles.tabText, tab === t.key && styles.tabTextActive]}>{t.label}</Text>
           </Pressable>
         ))}
-      </View>
-//Minhas listas
-        {tab === TABS.CUSTOM && (
-  <Pressable
-    style={styles.createButton}
-    onPress={() => setShowCreateModal(true)}
-  >
-    <Text style={styles.createButtonText}>
-      + Criar lista
-    </Text>
-  </Pressable>
-)}
+           </View>
+
+      {/* Minhas listas */}
+      {tab === TABS.CUSTOM && (
+        <Pressable
+          style={styles.createButton}
+          onPress={() => setShowCreateModal(true)}
+        >
+          <Text style={styles.createButtonText}>+ Criar lista</Text>
+        </Pressable>
+      )}
       {genres.length > 0 && (
         <FilterChips options={genreOptions} selected={filters.genre} onSelect={(genre) => setFilters({ genre })} />
       )}
