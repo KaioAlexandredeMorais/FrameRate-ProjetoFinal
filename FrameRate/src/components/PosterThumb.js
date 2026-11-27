@@ -1,4 +1,3 @@
-// codigo-pedro
 import { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { getImageUrl } from '../services/tmdbService';

@@ -1,8 +1,6 @@
-// codigo-pedro (substitui o placeholder anterior)
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-//Luiz adicionou
 import { updateProfile } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { Screen, AppButton, AppInput, Avatar } from '../components';
@@ -12,7 +10,6 @@ import { authErrorMessage } from '../services/authService';
 import { deleteAccount } from '../services/userService';
 import { colors, spacing, typography } from '../theme';
 
-// Limite seguro: um documento do Firestore aceita até 1 MB.
 const MAX_PHOTO_BASE64 = 700000;
 
 function StatTile({ label, value }) {
@@ -27,7 +24,6 @@ function StatTile({ label, value }) {
 function ProfileScreen() {
   const { user, logout } = useAuth();
   const { photo, stats, watchlist, setProfilePhoto } = useMovies();
-
   const [photoBusy, setPhotoBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [password, setPassword] = useState('');
@@ -97,15 +93,12 @@ function ProfileScreen() {
     setDeleteError('');
     try {
       await deleteAccount(password);
-      // Sem navegação manual: ao remover a conta, o AuthContext volta a `user = null`
-      // e o RootNavigator troca para a tela de login sozinho.
     } catch (e) {
       const wrongPassword = e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password';
       setDeleteError(wrongPassword ? 'Senha incorreta.' : authErrorMessage(e));
       setDeleting(false);
     }
   }
-//Luiz adicionou
   async function handleSaveName() {
   const newName = nameInput.trim();
   if (!newName) {
@@ -139,31 +132,14 @@ function ProfileScreen() {
         <View style={{ alignSelf: 'stretch', marginTop: spacing.md }}>
         {editingName ? (
           <>
-            <AppInput
-              label="Nome de perfil"
-              value={nameInput}
-              onChangeText={setNameInput}
-              editable={!nameBusy}
-            />
+            <AppInput label="Nome de perfil" value={nameInput} onChangeText={setNameInput} editable={!nameBusy} />
             <AppButton title="Salvar nome" onPress={handleSaveName} loading={nameBusy} />
             <View style={styles.cancel}>
-              <AppButton
-                title="Cancelar"
-                variant="outline"
-                disabled={nameBusy}
-                onPress={() => setEditingName(false)}
-              />
+              <AppButton title="Cancelar" variant="outline" disabled={nameBusy} onPress={() => setEditingName(false)} />
             </View>
           </>
         ) : (
-          <AppButton
-            title="Editar nome"
-            variant="outline"
-            onPress={() => {
-              setNameInput(savedName);
-              setEditingName(true);
-            }}
-          />
+          <AppButton title="Editar nome" variant="outline" onPress={() => { setNameInput(savedName); setEditingName(true); }} />
         )}
       </View>
         </View>
@@ -187,27 +163,10 @@ function ProfileScreen() {
               <Text style={styles.dangerText}>
                 Isso apaga sua conta, suas avaliações e sua lista “Quero ver”. Não dá para desfazer.
               </Text>
-              <AppInput
-                label="Confirme sua senha"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                error={deleteError}
-                editable={!deleting}
-              />
+              <AppInput label="Confirme sua senha" value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" error={deleteError} editable={!deleting} />
               <AppButton title="Excluir minha conta" variant="danger" onPress={handleDeleteAccount} loading={deleting} />
               <View style={styles.cancel}>
-                <AppButton
-                  title="Cancelar"
-                  variant="outline"
-                  disabled={deleting}
-                  onPress={() => {
-                    setConfirmingDelete(false);
-                    setPassword('');
-                    setDeleteError('');
-                  }}
-                />
+                <AppButton title="Cancelar" variant="outline" disabled={deleting} onPress={() => { setConfirmingDelete(false); setPassword(''); setDeleteError(''); }} />
               </View>
             </>
           ) : (

@@ -2,7 +2,7 @@ import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import RootNavigator from './src/navigation/RootNavigator';
 import { AuthProvider } from './src/context/AuthContext';
-import { MoviesProvider } from './src/context/MoviesContext'; // mudou-pedro
+import { MoviesProvider } from './src/context/MoviesContext';
 import { colors } from './src/theme';
 
 const navigationTheme = {
@@ -21,7 +21,6 @@ const navigationTheme = {
 export default function App() {
   return (
     <AuthProvider>
-      {/* mudou-pedro: MoviesProvider envolve o app (estado global de reviews e lista) */}
       <MoviesProvider>
         <NavigationContainer theme={navigationTheme}>
           <StatusBar style="light" backgroundColor={colors.background} />

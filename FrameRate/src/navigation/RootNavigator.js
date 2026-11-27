@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Loading } from '../components';
 import TabNavigator from './TabNavigator';
 import MovieDetailsScreen from '../screens/MovieDetailsScreen';
-import ReviewFormScreen from '../screens/ReviewFormScreen'; // mudou-pedro
+import ReviewFormScreen from '../screens/ReviewFormScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 
@@ -27,7 +27,6 @@ export default function RootNavigator() {
         <>
           <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
           <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} options={{ title: 'Detalhes' }} />
-          {/* mudou-pedro: tela do formulário de avaliação */}
           <Stack.Screen name="ReviewForm" component={ReviewFormScreen} options={{ title: 'Avaliar filme' }} />
         </>
       ) : (

@@ -1,5 +1,3 @@
-// codigo-pedro ]
-// Estatísticas exibidas no perfil, calculadas a partir das reviews do usuário.
 export function computeStats(reviews) {
   const total = reviews.length;
   if (total === 0) {

@@ -1,25 +1,13 @@
-// codigo-pedro 
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { colors, spacing } from '../theme';
 
-// options: [{ value, label }]; o valor `null` representa "Todos".
 function FilterChips({ options, selected, onSelect }) {
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scroll}
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
-    >
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       {options.map((option) => {
         const active = option.value === selected;
         return (
-          <Pressable
-            key={String(option.value)}
-            onPress={() => onSelect(option.value)}
-            style={[styles.chip, active && styles.chipActive]}
-          >
+          <Pressable key={String(option.value)} onPress={() => onSelect(option.value)} style={[styles.chip, active && styles.chipActive]}>
             <Text style={[styles.label, active && styles.labelActive]}>{option.label}</Text>
           </Pressable>
         );
