@@ -1,15 +1,5 @@
-// codigo-pedro (substitui o placeholder anterior)
 import { useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Screen, EmptyState, Loading, FilterChips, ReviewCard, WatchlistItem } from '../components';
 import { useMovies } from '../context/MoviesContext';
 import { scheduleMovieReminder } from '../services/notificationService';
@@ -45,24 +35,9 @@ function ListScreen({ navigation }) {
   const [listName, setListName] = useState('');
   const [listTag, setListTag] = useState('');
   const [listDescription, setListDescription] = useState('');
-
-  const {
-  loading,
-  error,
-  reviews,
-  watchlist,
-  customLists,
-  filteredReviews,
-  filteredWatchlist,
-  filters,
-  genres,
-  setFilters,
-  removeFromWatchlist,
-  createCustomList,  
-} = useMovies();
-//código luiz
+  const { loading, error, reviews, watchlist, customLists, filteredReviews, filteredWatchlist, filters, genres, setFilters, removeFromWatchlist, createCustomList } = useMovies();
   const isReviews = tab === TABS.REVIEWS;
-const isWatchlist = tab === TABS.WATCHLIST;
+  const isWatchlist = tab === TABS.WATCHLIST;
 
 async function handleCreateCustomList() {
   if (!listName.trim()) {
@@ -132,12 +107,7 @@ const totalWithoutFilters = isReviews
   function renderItem({ item }) {
   if (isReviews) {
     return (
-      <ReviewCard
-        review={item}
-        onPress={(r) =>
-          navigation.navigate('ReviewForm', { movie: toSummary(r) })
-        }
-      />
+      <ReviewCard review={item} onPress={(r) => navigation.navigate('ReviewForm', { movie: toSummary(r) })} />
     );
   }
 
@@ -179,65 +149,34 @@ const totalWithoutFilters = isReviews
   }
 
   return (
-    //Adicionar formulário de criação de lista personalizada
     <Screen>
-      <Modal
-  visible={showCreateModal}
-  transparent
-  animationType="slide"
-  onRequestClose={() => setShowCreateModal(false)}
->
-  <View style={styles.modalBackground}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>
-        Criar nova lista
-      </Text>
+      <Modal visible={showCreateModal} transparent animationType="slide" onRequestClose={() => setShowCreateModal(false)}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Criar nova lista
+            </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nome da lista"
-        placeholderTextColor={colors.textSecondary}
-        value={listName}
-        onChangeText={setListName}
-      />
+            <TextInput style={styles.input} placeholder="Nome da lista" placeholderTextColor={colors.textSecondary} value={listName} onChangeText={setListName} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Tag (ex.: ação, favoritos)"
-        placeholderTextColor={colors.textSecondary}
-        value={listTag}
-        onChangeText={setListTag}
-      />
+            <TextInput style={styles.input} placeholder="Tag (ex.: ação, favoritos)" placeholderTextColor={colors.textSecondary} value={listTag} onChangeText={setListTag} />
 
-      <TextInput
-        style={[styles.input, styles.descriptionInput]}
-        placeholder="Descrição da lista"
-        placeholderTextColor={colors.textSecondary}
-        value={listDescription}
-        onChangeText={setListDescription}
-        multiline
-      />
+            <TextInput style={[styles.input, styles.descriptionInput]} placeholder="Descrição da lista" placeholderTextColor={colors.textSecondary} value={listDescription} onChangeText={setListDescription} multiline />
 
-      <Pressable
-        style={styles.createButton}
-        onPress={handleCreateCustomList}
-      >
-        <Text style={styles.createButtonText}>
-          Salvar lista
-        </Text>
-      </Pressable>
+            <Pressable style={styles.createButton} onPress={handleCreateCustomList}>
+              <Text style={styles.createButtonText}>
+                Salvar lista
+              </Text>
+            </Pressable>
 
-      <Pressable
-        onPress={() => setShowCreateModal(false)}
-        style={styles.cancelButton}
-      >
-        <Text style={styles.cancelButtonText}>
-          Cancelar
-        </Text>
-      </Pressable>
-    </View>
-  </View>
-</Modal>
+            <Pressable onPress={() => setShowCreateModal(false)} style={styles.cancelButton}>
+              <Text style={styles.cancelButtonText}>
+                Cancelar
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Text style={styles.title}>Minha Lista</Text>
       <Text style={styles.subtitle}>Sua história como espectador.</Text>
 
@@ -253,7 +192,6 @@ const totalWithoutFilters = isReviews
         ))}
            </View>
 
-      {/* Minhas listas */}
       {tab === TABS.CUSTOM && (
         <Pressable
           style={styles.createButton}
@@ -274,14 +212,7 @@ const totalWithoutFilters = isReviews
       ) : error ? (
         <EmptyState title="Ops!" message={error} />
       ) : (
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          ListEmptyComponent={renderEmpty}
-          contentContainerStyle={data.length === 0 ? styles.emptyContainer : styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
+        <FlatList data={data} keyExtractor={(item) => item.id} renderItem={renderItem} ListEmptyComponent={renderEmpty} contentContainerStyle={data.length === 0 ? styles.emptyContainer : styles.listContent} showsVerticalScrollIndicator={false} />
       )}
     </Screen>
   );

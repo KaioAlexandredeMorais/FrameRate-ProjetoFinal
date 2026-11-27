@@ -1,11 +1,8 @@
-// codigo-pedro 
 import { collection, doc, setDoc, deleteDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 const watchlistRef = collection(db, 'watchlist');
 
-// Um documento por (usuário, filme). O id composto evita duplicatas
-// e permite remover sem precisar consultar antes.
 const itemId = (userId, movieId) => `${userId}_${movieId}`;
 
 export async function addToWatchlist(userId, movie) {
@@ -27,7 +24,6 @@ export async function addToWatchlist(userId, movie) {
 export const removeFromWatchlist = (userId, movieId) =>
   deleteDoc(doc(db, 'watchlist', itemId(userId, movieId)));
 
-// Sem orderBy no servidor: evita exigir índice composto no Firestore.
 export async function getUserWatchlist(userId) {
   const snap = await getDocs(query(watchlistRef, where('userId', '==', userId)));
   return snap.docs

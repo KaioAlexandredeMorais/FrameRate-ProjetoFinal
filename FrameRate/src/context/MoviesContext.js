@@ -1,22 +1,18 @@
-// codigo-pedro 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { useAuth } from './AuthContext';
 import * as reviewService from '../services/reviewService';
 import * as watchlistService from '../services/watchlistService';
 import * as userService from '../services/userService';
-// serviço responsável pelas listas personalizadas do usuário. codigo luiz
 import * as customListService from '../services/customListService';
 import { computeStats, uniqueGenres } from '../utils/stats';
 import { toDate } from '../utils/format';
 
 const MoviesContext = createContext(null);
-
 const defaultFilters = { genre: null, minRating: 0 };
 
 const initialState = {
   reviews: [],
   watchlist: [],
-  //código luiz espaços das listas no estado inicial
   customLists: [],
   photo: null,
   filters: defaultFilters,
@@ -128,7 +124,6 @@ export function MoviesProvider({ children }) {
   const uid = user?.uid;
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Carrega (ou limpa) os dados sempre que o usuário logado muda.
   useEffect(() => {
     if (!uid) {
       dispatch({ type: 'RESET' });
@@ -155,11 +150,11 @@ export function MoviesProvider({ children }) {
     };
   }, [uid]);
 
-  // `movie` segue o formato { movieId, title, posterPath, genres: [nomes], year }.
   const addReview = useCallback(
-    async (movie, { rating, text, watchedAt }) => {
+    async (movie, { rating, text, watchedAt, isPublic = true }) => {
       const data = {
         userId: uid,
+        userName: user?.displayName || null,
         movieId: movie.movieId,
         title: movie.title,
         posterPath: movie.posterPath ?? null,
@@ -168,11 +163,12 @@ export function MoviesProvider({ children }) {
         rating,
         text,
         watchedAt,
+        isPublic,
       };
       const id = await reviewService.createReview(data);
       dispatch({ type: 'REVIEW_ADDED', review: { id, ...data, createdAt: new Date() } });
     },
-    [uid]
+    [uid, user]
   );
 
   const editReview = useCallback(async (id, changes) => {
@@ -201,7 +197,6 @@ export function MoviesProvider({ children }) {
     [uid]
   );
   
-  // Cria uma lista personalizada. //Código luiz abaixo
   const createCustomList = useCallback(
     async (list) => {
       const customList = await customListService.createCustomList(uid, list);
@@ -210,7 +205,7 @@ export function MoviesProvider({ children }) {
     [uid]
   );
 
-  // Atualiza nome, tag ou descrição da lista.
+  // Atualiza nome, tag ou descrição da lista
   const updateCustomList = useCallback(
     async (listId, changes) => {
       await customListService.updateCustomList(listId, changes);
@@ -219,7 +214,7 @@ export function MoviesProvider({ children }) {
     []
   );
 
-  // Exclui uma lista personalizada.
+  // Exclui uma lista personalizada
   const deleteCustomList = useCallback(
     async (listId) => {
       await customListService.deleteCustomList(listId);
@@ -228,7 +223,7 @@ export function MoviesProvider({ children }) {
     []
   );
 
-  // Adiciona um filme à lista.
+  // Adiciona um filme à lista
   const addMovieToCustomList = useCallback(
     async (listId, movie) => {
       await customListService.addMovieToCustomList(listId, movie);
@@ -237,7 +232,7 @@ export function MoviesProvider({ children }) {
     []
   );
 
-  // Remove um filme da lista.
+  // Remove um filme da lista
   const removeMovieFromCustomList = useCallback(
     async (listId, movieId) => {
       await customListService.removeMovieFromCustomList(listId, movieId);

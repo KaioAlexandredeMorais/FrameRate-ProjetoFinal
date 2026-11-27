@@ -1,13 +1,12 @@
-// codigo-pedro (arquivo novo da parte do Pedro)
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen, AppInput, AppButton, PosterThumb, StarRating } from '../components';
 import { useMovies } from '../context/MoviesContext';
 import { validateReview, REVIEW_TEXT_MAX } from '../utils/validators';
 import { formatDate, parseDate, toDate } from '../utils/format';
 import { colors, spacing, typography } from '../theme';
 
-// Aplica a máscara dd/mm/aaaa enquanto o usuário digita.
 function maskDate(raw) {
   const digits = raw.replace(/\D/g, '').slice(0, 8);
   if (digits.length <= 2) return digits;
@@ -15,17 +14,15 @@ function maskDate(raw) {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 }
 
-// route.params.movie = { movieId, title, posterPath, genres: [nomes], year }
 function ReviewFormScreen({ navigation, route }) {
   const movie = route.params.movie;
   const { getReviewByMovie, addReview, editReview, removeReview, isInWatchlist, removeFromWatchlist } = useMovies();
-
   const existing = getReviewByMovie(movie.movieId);
   const isEditing = Boolean(existing);
-
   const [rating, setRating] = useState(existing?.rating ?? 0);
   const [text, setText] = useState(existing?.text ?? '');
   const [watchedAt, setWatchedAt] = useState(formatDate(toDate(existing?.watchedAt) ?? new Date()));
+  const [isPublic, setIsPublic] = useState(existing?.isPublic !== false);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -40,12 +37,11 @@ function ReviewFormScreen({ navigation, route }) {
 
     setSaving(true);
     try {
-      const data = { rating, text: text.trim(), watchedAt: parsedDate };
+      const data = { rating, text: text.trim(), watchedAt: parsedDate, isPublic };
       if (isEditing) {
         await editReview(existing.id, data);
       } else {
         await addReview(movie, data);
-        // Quem avaliou já assistiu: tira da lista "Quero ver".
         if (isInWatchlist(movie.movieId)) await removeFromWatchlist(movie.movieId).catch(() => {});
       }
       Alert.alert('Pronto!', isEditing ? 'Avaliação atualizada.' : 'Avaliação salva.', [
@@ -96,27 +92,36 @@ function ReviewFormScreen({ navigation, route }) {
 
           <View style={styles.spacer} />
 
-          <AppInput
-            label="Data em que assistiu"
-            value={watchedAt}
-            onChangeText={(v) => setWatchedAt(maskDate(v))}
-            placeholder="dd/mm/aaaa"
-            keyboardType="number-pad"
-            maxLength={10}
-            error={errors.watchedAt}
-          />
+          <AppInput label="Data em que assistiu" value={watchedAt} onChangeText={(v) => setWatchedAt(maskDate(v))} placeholder="dd/mm/aaaa" keyboardType="number-pad" maxLength={10} error={errors.watchedAt} />
 
-          <AppInput
-            label="Comentário (opcional)"
-            value={text}
-            onChangeText={setText}
-            placeholder="O que você achou do filme?"
-            multiline
-            maxLength={REVIEW_TEXT_MAX}
-            error={errors.text}
-          />
+          <AppInput label="Comentário (opcional)" value={text} onChangeText={setText} placeholder="O que você achou do filme?" multiline maxLength={REVIEW_TEXT_MAX} error={errors.text} />
           <Text style={styles.counter}>
             {text.length}/{REVIEW_TEXT_MAX}
+          </Text>
+
+          <Text style={styles.label}>Visibilidade</Text>
+          <View style={styles.visibility}>
+            {[
+              { value: true, label: 'Pública', icon: 'earth-outline' },
+              { value: false, label: 'Privada', icon: 'lock-closed-outline' },
+            ].map((opt) => {
+              const active = isPublic === opt.value;
+              return (
+                <Pressable
+                  key={opt.label}
+                  onPress={() => setIsPublic(opt.value)}
+                  style={[styles.visibilityOption, active && styles.visibilityActive]}
+                >
+                  <Ionicons name={opt.icon} size={18} color={active ? colors.primary : colors.textSecondary} />
+                  <Text style={[styles.visibilityText, active && styles.visibilityTextActive]}>{opt.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={styles.visibilityHint}>
+            {isPublic
+              ? 'Outros usuários poderão ver esta avaliação na página do filme.'
+              : 'Somente você poderá ver esta avaliação.'}
           </Text>
 
           {formError ? <Text style={[styles.error, styles.formError]}>{formError}</Text> : null}
@@ -147,6 +152,23 @@ const styles = StyleSheet.create({
   error: { color: colors.error, fontSize: typography.small, marginTop: spacing.xs },
   formError: { marginBottom: spacing.md, fontSize: 14 },
   deleteButton: { marginTop: spacing.md },
+  visibility: { flexDirection: 'row', marginBottom: spacing.sm },
+  visibilityOption: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.sm + 2,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    marginRight: spacing.sm,
+  },
+  visibilityActive: { borderColor: colors.primary },
+  visibilityText: { color: colors.textSecondary, fontSize: typography.body, fontWeight: '600', marginLeft: spacing.xs + 2 },
+  visibilityTextActive: { color: colors.text },
+  visibilityHint: { color: colors.textSecondary, fontSize: typography.small, marginBottom: spacing.lg },
 });
 
 export default ReviewFormScreen;

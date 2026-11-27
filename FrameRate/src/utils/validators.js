@@ -8,10 +8,8 @@ export function validateLogin({ email, password }) {
   return errors;
 }
 
-// mudou-pedro: início (validação do formulário de avaliação)
 export const REVIEW_TEXT_MAX = 500;
 
-// `watchedAt` é o texto digitado (dd/mm/aaaa); `parsedDate` é o Date já convertido (ou null).
 export function validateReview({ rating, text, watchedAt, parsedDate }) {
   const errors = {};
   if (!rating) errors.rating = 'Toque nas estrelas para dar uma nota.';
@@ -21,7 +19,6 @@ export function validateReview({ rating, text, watchedAt, parsedDate }) {
   else if (parsedDate.getTime() > Date.now()) errors.watchedAt = 'A data não pode estar no futuro.';
   return errors;
 }
-// mudou-pedro: fim
 
 export function validateRegister({ name, email, password, confirm }) {
   const errors = {};

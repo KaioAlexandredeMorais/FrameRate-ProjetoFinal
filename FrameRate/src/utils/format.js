@@ -1,5 +1,3 @@
-// codigo-pedro 
-// Datas do Firestore chegam como Timestamp; as criadas localmente são Date.
 export const toDate = (value) => value?.toDate?.() ?? (value instanceof Date ? value : null);
 
 export function formatDate(value) {
@@ -10,7 +8,6 @@ export function formatDate(value) {
   return `${dd}/${mm}/${date.getFullYear()}`;
 }
 
-// Converte "dd/mm/aaaa" em Date (ou null se for inválida/futura).
 export function parseDate(text) {
   const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(text.trim());
   if (!match) return null;

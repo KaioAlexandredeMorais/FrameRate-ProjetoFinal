@@ -1,17 +1,11 @@
-// codigo-pedro
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 
-// `photo` é a imagem em base64 salva no Firestore. Com `onPress`, mostra o
-// ícone de câmera indicando que a foto pode ser trocada.
 function Avatar({ photo, size = 88, onPress }) {
   const radius = size / 2;
   const content = photo ? (
-    <Image
-      source={{ uri: `data:image/jpeg;base64,${photo}` }}
-      style={{ width: size, height: size, borderRadius: radius }}
-    />
+    <Image source={{ uri: `data:image/jpeg;base64,${photo}` }} style={{ width: size, height: size, borderRadius: radius }} />
   ) : (
     <View style={[styles.empty, { width: size, height: size, borderRadius: radius }]}>
       <Ionicons name="person" size={size / 2} color={colors.primary} />

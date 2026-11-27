@@ -55,7 +55,6 @@ export async function searchMovies(query, page = 1) {
 export async function getMovieDetails(movieId) {
   return request(`/movie/${movieId}`, {
     append_to_response: 'credits,videos,watch/providers,recommendations',
-    // Sem isso, com language=pt-BR a TMDB esconde os trailers em inglês
     include_video_language: 'pt,en,null',
   });
 }

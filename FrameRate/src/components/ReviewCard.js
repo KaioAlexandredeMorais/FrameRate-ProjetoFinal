@@ -1,4 +1,3 @@
-// codigo-pedro
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import PosterThumb from './PosterThumb';
 import StarRating from './StarRating';

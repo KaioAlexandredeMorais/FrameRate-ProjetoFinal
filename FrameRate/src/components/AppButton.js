@@ -1,23 +1,20 @@
 import { Pressable, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 
-// mudou-pedro: novos variants (outline, danger) e novo prop loading
-// variant: 'primary' | 'secondary' | 'outline' | 'danger'
+
 function AppButton({ title, onPress, variant = 'primary', disabled = false, loading = false }) {
-  const inactive = disabled || loading; // mudou-pedro
+  const inactive = disabled || loading;
 
   return (
     <Pressable onPress={onPress} disabled={inactive}
       style={[
         styles.button,
         variant === 'secondary' && styles.secondary,
-        // mudou-pedro: variants novos
         variant === 'outline' && styles.outline,
         variant === 'danger' && styles.danger,
         inactive && styles.disabled,
       ]}
     >
-      {/* mudou-pedro: spinner enquanto carrega */}
       {loading ? (
         <ActivityIndicator color={colors.text} />
       ) : (
@@ -34,12 +31,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 52, // mudou-pedro
+    minHeight: 52,
   },
   secondary: {
     backgroundColor: colors.surfaceLight,
   },
-  // mudou-pedro: estilos novos (outline, danger, outlineText)
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,

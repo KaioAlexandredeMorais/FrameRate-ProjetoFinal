@@ -9,7 +9,6 @@ function AppInput({
   secureTextEntry = false,
   keyboardType = 'default',
   multiline = false,
-  // mudou-pedro: novos props (error, autoCapitalize, maxLength, editable)
   error,
   autoCapitalize,
   maxLength,
@@ -20,7 +19,6 @@ function AppInput({
       {label && <Text style={styles.label}>{label}</Text>}
 
       <TextInput
-        // mudou-pedro: estilo de erro e de campo desabilitado
         style={[styles.input, multiline && styles.multiline, error && styles.inputError, !editable && styles.disabled]}
         value={value}
         onChangeText={onChangeText}
@@ -29,13 +27,11 @@ function AppInput({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         multiline={multiline}
-        // mudou-pedro: novos props repassados ao TextInput
         autoCapitalize={autoCapitalize}
         maxLength={maxLength}
         editable={editable}
       />
 
-      {/* mudou-pedro: mensagem de erro do campo */}
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -60,7 +56,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     fontSize: typography.body,
   },
-  // mudou-pedro: estilos novos (inputError, disabled, error)
   inputError: {
     borderColor: colors.error,
   },

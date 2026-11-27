@@ -3,7 +3,6 @@ export { default as AppButton } from './AppButton';
 export { default as AppInput } from './AppInput';
 export { default as Loading } from './Loading';
 export { default as EmptyState } from './EmptyState';
-// mudou-pedro: componentes novos
 export { default as StarRating } from './StarRating';
 export { default as PosterThumb } from './PosterThumb';
 export { default as ReviewCard } from './ReviewCard';
